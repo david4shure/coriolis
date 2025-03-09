@@ -24,3 +24,7 @@ target_include_directories(CoriolisEngine PUBLIC include)
 
 # Add compiler warnings
 target_compile_options(CoriolisEngine PRIVATE -Wall -Wextra -Wpedantic)
+
+# Enable testing and add tests directory
+enable_testing()
+add_subdirectory(tests)

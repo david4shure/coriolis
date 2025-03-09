@@ -45,3 +45,11 @@ gmon.out
 
 # Compile Commands
 compile_commands.json
+
+Testing/
+CTestTestfile.cmake
+_deps/
+tests/CMakeFiles/
+tests/*.cmake
+tests/run_tests
+tests/Makefile
