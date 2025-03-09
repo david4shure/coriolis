@@ -1,0 +1,47 @@
+# Build directories
+/build/
+/CMakeFiles/
+/CMakeCache.txt
+/cmake_install.cmake
+/Makefile
+
+# Object files and compiled libraries
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+
+# CMake Stuff
+.cache/
+
+# Generated files
+*.log
+*.out
+*.tmp
+
+# Vim swap and backup files
+*.swp
+*.swo
+*.swn
+*.bak
+*.un~
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Debugging and profiling
+*.dSYM/
+gmon.out
+
+# Test and example binaries
+/tests/*.exe
+/tests/*.out
+/examples/*.exe
+/examples/*.out
+
+# Compile Commands
+compile_commands.json
