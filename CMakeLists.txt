@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
 project(CoriolisEngine VERSION 1.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+set(CMAKE_OSX_ARCHITECTURES "arm64")
 
 # Ensure compile_commands.json is generated
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

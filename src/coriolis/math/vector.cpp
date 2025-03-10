@@ -63,7 +63,7 @@ real Vector3::angle_between(const Vector3& other) const noexcept {
 
 // Gives us a Basis from vector a and b, with a being retained as one of the
 // orthogonal axes
-static std::optional<Basis3> basis_from(Vector3& a, Vector3& b) noexcept {
+std::optional<Basis3> Vector3::basis_from(Vector3& a, Vector3& b) noexcept {
     a.norm();
     Vector3 c = a % b;
     if (c.sqr_mag() == 0.0) return std::nullopt;

@@ -53,3 +53,5 @@ tests/CMakeFiles/
 tests/*.cmake
 tests/run_tests
 tests/Makefile
+run_tests
+tests/run_tests
