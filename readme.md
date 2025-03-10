@@ -1,2 +1,2 @@
 ## Coriolis
-#  A rigid body physics engine written for primarily pedagoical purposes 
+A rigid body physics engine written for primarily pedagoical purposes 
