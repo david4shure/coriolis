@@ -4,10 +4,33 @@
 #include <random>
 #include <chrono>
 #include <thread>
-
 #include <stdio.h>
+
 Vector3 toRL(coriolis::Vector3 vec) {
     return Vector3 { (float)vec.x, (float)vec.y, (float)vec.z };
+}
+
+void integrate_35(coriolis::Particle* particle,real duration) {
+    // Don't integrate stuff with infinite mass
+    if (particle->invMass <= 0.0f) return;
+
+    // Eq. 2.7 p' = p + p(dot) * t
+    particle->pos += particle->vel * duration;
+
+    // TODO(David): Add a force accumulator and set this here rather than leaving it const
+    coriolis::Vector3 resultingAcc = particle->acc;
+
+    // Integrate velocity forward
+    particle->vel += resultingAcc * duration;
+
+    // Apply damping force
+    particle->vel *= (particle->damping);
+
+    // Clear forces
+    particle->clearAccumulator();
+
+    // Update particle lifetime
+    particle->lifetime -= duration;
 }
 
 coriolis::Particle* getParticle(real x) {
@@ -101,7 +124,7 @@ int main(void)
 
             if (delta != 0.0) {
                 a->integrate(delta);
-                b->integrate_35(delta);
+                integrate_35(b,delta);
             }
 
             DrawSphere(toRL(a->pos), 0.4, RED);

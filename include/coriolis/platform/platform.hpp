@@ -5,6 +5,6 @@
 
 typedef long double real;
 
-#define real_pow powf;
+#define real_pow powf
 
 #endif

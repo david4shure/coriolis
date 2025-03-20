@@ -35,10 +35,6 @@ public:
     // Newton-Euler method
     void integrate(real duration);
 
-    // Integrates the particle forward in time by the set amount
-    // Newton-Euler method
-    void integrate_35(real duration);
-
     // Clears force accumulator
     void clearAccumulator();
 
