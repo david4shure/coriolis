@@ -1,4 +1,4 @@
-#include <coriolis/platform/platform.h>
+#include <coriolis/platform/platform.hpp>
 #include <optional>
 
 #ifndef CORIOLIS_MATH_VECTOR3_HPP
@@ -59,6 +59,22 @@ struct Vector3 {
   // Operator overloads
   constexpr Vector3 operator+(const Vector3& other) const noexcept {
       return add(other);
+  }
+
+  constexpr Vector3 operator*=(const real& other) noexcept {
+      Vector3 mul_vec = scale(other);
+      x = mul_vec.x;
+      y = mul_vec.y;
+      z = mul_vec.z;
+      return mul_vec;
+  }
+
+  constexpr Vector3 operator+=(const Vector3& other) noexcept {
+      Vector3 added_vector = add(other);
+      x = added_vector.x;
+      y = added_vector.y;
+      z = added_vector.z;
+      return added_vector;
   }
   
   constexpr Vector3 operator-(const Vector3& other) const noexcept {
