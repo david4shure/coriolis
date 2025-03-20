@@ -44,6 +44,9 @@ target_link_libraries(CoriolisEngineExamples PRIVATE raylib CoriolisEngine)
 # Ensure executable is linked properly
 add_executable(vector vector.cpp)
 add_executable(particle particle.cpp)
+add_executable(particle_3_d particle_3_d.cpp)
+
 target_link_libraries(vector PRIVATE CoriolisEngineExamples raylib)
 target_link_libraries(particle PRIVATE CoriolisEngineExamples raylib)
+target_link_libraries(particle_3_d PRIVATE CoriolisEngineExamples raylib)
 

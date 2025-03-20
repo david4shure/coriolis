@@ -29,6 +29,31 @@ void Particle::integrate(real duration) {
     lifetime -= duration;
 }
 
+void Particle::integrate_35(real duration) {
+    // Don't integrate stuff with infinite mass
+    if (invMass <= 0.0f) return;
+
+    assert(duration > 0.0);
+
+    // Eq. 2.7 p' = p + p(dot) * t
+    pos += vel * duration;
+
+    // TODO(David): Add a force accumulator and set this here rather than leaving it const
+    Vector3 resultingAcc = acc;
+
+    // Integrate velocity forward
+    vel += resultingAcc * duration;
+
+    // Apply damping force
+    vel *= (damping);
+
+    // Clear forces
+    clearAccumulator();
+
+    // Update particle lifetime
+    lifetime -= duration;
+}
+
 // TODO implement me
 void Particle::clearAccumulator() {
 

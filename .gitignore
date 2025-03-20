@@ -63,4 +63,4 @@ CPackSourceConfig.cmake
 *cmake_install.cmake*
 examples/vector
 examples/particle
-
+examples/particle_3_d
