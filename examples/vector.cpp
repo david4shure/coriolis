@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include "raymath.h"
 #include <coriolis/math/vector.hpp>
 
 int main(void)
@@ -44,7 +45,8 @@ int main(void)
             BeginMode3D(camera);
                 DrawLine3D(zero,a_r,BLUE);
                 DrawLine3D(zero,b_r,GREEN);
-                DrawLine3D(b_r,c_r,RED);
+                DrawLine3D(Vector3Zero(),c_r,ORANGE);
+                DrawGrid(25.0,10.0);
             EndMode3D();
 
         EndDrawing();
