@@ -83,6 +83,8 @@ int main(void)
                 ++it;
             }
 
+            DrawGrid(25,10);
+
             EndMode3D();
 
         EndDrawing();
