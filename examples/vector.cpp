@@ -44,8 +44,8 @@ int main(void)
 
             BeginMode3D(camera);
                 DrawLine3D(zero,a_r,BLUE);
-                DrawLine3D(zero,b_r,GREEN);
-                DrawLine3D(Vector3Zero(),c_r,ORANGE);
+                DrawLine3D(zero,b_r,RED);
+                DrawLine3D(Vector3Zero(),c_r,PURPLE);
                 DrawGrid(25.0,10.0);
             EndMode3D();
 

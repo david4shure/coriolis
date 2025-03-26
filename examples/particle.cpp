@@ -66,12 +66,13 @@ int main(void)
 
         BeginDrawing();
 
-            ClearBackground(BLACK);
+            ClearBackground(WHITE);
 
             BeginMode3D(camera);
 
             for (auto it = particles.begin(); it != particles.end(); ) {
                 coriolis::Particle* particle = *it;
+
                 particle->integrate(delta);
 
                 if (particle->lifetime <= 0) {

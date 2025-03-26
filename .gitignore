@@ -64,3 +64,4 @@ CPackSourceConfig.cmake
 examples/vector
 examples/particle
 examples/particle_3_d
+examples/fireworks
