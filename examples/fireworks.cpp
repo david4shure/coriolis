@@ -3,9 +3,10 @@
 #include <coriolis/physics/firework.hpp>
 #include <coriolis/math/random.hpp>
 #include "assert.h"
-#include <iostream>
 #include <memory>
+#include <sstream>
 
+constexpr static int MAX_PARTICLES = 50'000;
 
 Vector3 toRL(coriolis::Vector3 vec) {
     return Vector3 { (float)vec.x, (float)vec.y, (float)vec.z };
@@ -16,7 +17,7 @@ int main(void)
     std::vector<std::unique_ptr<coriolis::FireworkRule>> rules = coriolis::FireworkRule::GetDefaultFireworkRules();
     std::vector<std::unique_ptr<coriolis::Firework>> fireworks {};
 
-    fireworks.reserve(5);
+    fireworks.resize(MAX_PARTICLES);
 
     const int screenWidth = 1920;
     const int screenHeight = 1080;
@@ -33,21 +34,24 @@ int main(void)
     SetTargetFPS(60);
     DisableCursor();
 
+    int firework_index = 0;
+
     while (!WindowShouldClose())
     {
         UpdateCamera(&camera, CAMERA_FREE);
 
-
         float delta = GetFrameTime();
+        fireworks.size();
 
-        // Add this flag to your Firework class
-        // bool markedForDeletion = false;
-
-        // Then in your main loop
-        std::vector<std::unique_ptr<coriolis::Firework>> newFireworks;
 
         // Process existing fireworks
-        for (auto& firework : fireworks) {
+        for (size_t i = 0; i < fireworks.size(); i++) {
+            auto& firework = fireworks[i];
+
+            if (firework == nullptr) {
+                continue;
+            }
+
             bool expired = firework->update(delta);
 
             if (expired) {
@@ -58,57 +62,39 @@ int main(void)
                     coriolis::Vector3 vel = firework->particle->vel;
 
                     for (const auto& payload : rule->payloads) {
+                        auto rule_for_payload = coriolis::FireworkRule::RuleForType(rules, payload.type);
+
                         for (unsigned i = 0; i < payload.count; ++i) {
-                            auto rule_for_payload = coriolis::FireworkRule::RuleForType(rules, payload.type);
 
                             auto particle = std::make_unique<coriolis::Particle>(
                                 pos,
-                                vel + randomVector(rule_for_payload->minVel, rule_for_payload->maxVel),
+                                vel + rule_for_payload->sampleVelocity(),
                                 coriolis::Vector3(0, -10, 0),
                                 rule_for_payload->damping,
                                 1
                             );
 
-                            newFireworks.push_back(
+                            fireworks[firework_index] = 
                                 std::make_unique<coriolis::Firework>(
                                     std::move(particle),
                                     coriolis::randomReal(rule_for_payload->minAge, rule_for_payload->maxAge),
                                     rule_for_payload->type
-                                )
-                            );
+                                );
+
+                            firework_index = (++firework_index) % MAX_PARTICLES;
                         }
                     }
                 }
 
-                // Mark for deletion, but don't delete yet
-                firework->markedForDeletion = true;
+                fireworks[i] = nullptr;
             }
         }
-
-        // Create a new clean vector without deleted fireworks
-        std::vector<std::unique_ptr<coriolis::Firework>> cleanFireworks;
-        cleanFireworks.reserve(fireworks.size() + newFireworks.size());
-
-        // Move valid fireworks to the new vector
-        for (auto& firework : fireworks) {
-            if (firework && !firework->markedForDeletion) {
-                cleanFireworks.push_back(std::move(firework));
-            }
-        }
-
-        // Add new fireworks
-        for (auto& newFirework : newFireworks) {
-            cleanFireworks.push_back(std::move(newFirework));
-        }
-
-        // Replace the old vector
-        fireworks = std::move(cleanFireworks);
 
         if (IsKeyDown(KEY_ONE)) {
             auto rule = rules[0].get();
             auto particle = std::make_unique<coriolis::Particle>(
                 coriolis::Vector3(0,0,0),
-                randomVector(rule->minVel, rule->maxVel),
+                rule->sampleVelocity(),
                 coriolis::Vector3(0,-10,0),
                 rule->damping,
                 1
@@ -120,7 +106,28 @@ int main(void)
                 0
             );
 
-            fireworks.push_back(std::move(firework));
+            fireworks[firework_index] = std::move(firework);
+            firework_index = (++firework_index) % MAX_PARTICLES;
+        }
+
+        if (IsKeyDown(KEY_TWO)) {
+            auto rule = rules[4].get();
+            auto particle = std::make_unique<coriolis::Particle>(
+                coriolis::Vector3(0,0,0),
+                rule->sampleVelocity(),
+                coriolis::Vector3(0,-10,0),
+                rule->damping,
+                3
+            );
+
+            auto firework = std::make_unique<coriolis::Firework>(
+                std::move(particle),
+                coriolis::randomReal(rule->minAge, rule->maxAge),
+                4
+            );
+
+            fireworks[firework_index] = std::move(firework);
+            firework_index = (++firework_index) % MAX_PARTICLES;
         }
 
         BeginDrawing();
@@ -128,7 +135,12 @@ int main(void)
             ClearBackground(BLACK);
 
             BeginMode3D(camera);
+                int total_fireworks = 0;
                 for (auto &firework : fireworks) {
+                    if (firework == nullptr) {
+                        continue;
+                    }
+                    total_fireworks++;
                     Color color;
                     switch (firework->type) {
                         case 0:
@@ -143,19 +155,39 @@ int main(void)
                         case 3:
                             color = ORANGE;
                             break;
+                        case 4:
+                            color = PINK;
+                            break;
+                        case 5:
+                            color = SKYBLUE;
+                            break;
+                        case 6:
+                            color = YELLOW;
+                            break;
                         default:
                             color = BLUE;
                     }
 
-                    DrawPoint3D(toRL(firework->particle->pos),color);
+                    DrawCube(toRL(firework->particle->pos),0.2,0.2,0.2,color);
                     /* DrawCircle3D(toRL(firework->particle->pos), 0.2, Vector3(0,1,0), 2.3, color); */
                     /* DrawSphereEx(toRL(firework->particle->pos), 0.2, 3,3,color); */
                 }
                 DrawGrid(25.0,10.0);
             EndMode3D();
 
-            std::string result = std::format("Number of particles {}", fireworks.size()); // "The answer is 42"
-            DrawText(result.c_str(),0,10,15,BLUE);
+            std::stringstream ss;
+            ss << "Max number of particles: " << fireworks.size();
+            std::string result = ss.str();
+            DrawText(result.c_str(), 0, 10, 15, BLUE);
+            std::stringstream nss;
+            nss << "Firework index: " << firework_index;
+            std::string index = nss.str();
+            DrawText(index.c_str(), 0, 30, 15, GREEN);
+            std::stringstream xss;
+            xss << "Total Fireworks: " << total_fireworks;
+            std::string total = xss.str();
+            DrawText(total.c_str(), 0, 50, 15, RED);
+            total_fireworks = 0;
 
         EndDrawing();
 

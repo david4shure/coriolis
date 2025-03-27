@@ -30,13 +30,43 @@ public:
     // What type of firework is it, corresponds to type of FireworkRule
     unsigned type;
 
-    bool markedForDeletion;
+    bool is_expired();
 
     // Update function
     bool update(real duration);
 
 }; // class Particle
 
+struct AABBEmission {
+    Vector3 minVel;
+    Vector3 maxVel;
+};
+
+struct SphereEmission {
+    real radius;
+};
+
+struct HemiSphereEmission {
+    real radius;
+};
+
+enum FireworkEmissionStrategyLabel {
+    AABB,
+    Sphere,
+    HemiSphere,
+};
+
+struct FireworkEmissionStrategy {
+    FireworkEmissionStrategyLabel type;
+
+    union {
+        AABBEmission aabb;
+        SphereEmission sphere;
+        HemiSphereEmission hemisphere;
+    };
+
+    FireworkEmissionStrategy() {}
+};
 
 struct FireworkRule {
     // Type of firework
@@ -51,29 +81,63 @@ struct FireworkRule {
     // Damping factor on velocity
     real damping;
 
-    // Minimum velocity of the firework
-    coriolis::Vector3 minVel;
-
-    // Maximum velocity of the firework
-    coriolis::Vector3 maxVel;
+    // Sample Strategy
+    FireworkEmissionStrategy sampleStrategy;
 
     std::vector<FireworkPayload> payloads;
 
     // Static method to grab the firework rules
     static std::vector<std::unique_ptr<FireworkRule>> GetDefaultFireworkRules();
 
+    // Samples the vector in accordance with the Sample Strategy
+    Vector3 sampleVelocity();
+
+    // Fetches the rule for the corresonding firework type
     static FireworkRule* RuleForType(std::vector<std::unique_ptr<FireworkRule>>& rules, unsigned type);
 
     // Constructor
-    constexpr FireworkRule(
+    FireworkRule(
             const unsigned type,
             real minAge,
             real maxAge,
             real damping,
             coriolis::Vector3 minVel,
-            coriolis::Vector3 maxVel)
-        :
-            type(type), minAge(minAge), maxAge(maxAge), damping(damping), minVel(minVel), maxVel(maxVel) {};
+            coriolis::Vector3 maxVel
+    ) :
+        type(type),
+        minAge(minAge),
+        maxAge(maxAge),
+        damping(damping)
+    {
+        sampleStrategy.type = FireworkEmissionStrategyLabel::AABB;
+        new (&sampleStrategy.aabb) AABBEmission{ minVel, maxVel };
+    };
+
+    // Constructor
+    FireworkRule(
+            const unsigned type,
+            real minAge,
+            real maxAge,
+            real damping,
+            real radius,
+            FireworkEmissionStrategyLabel label
+    ) :
+        type(type),
+        minAge(minAge),
+        maxAge(maxAge),
+        damping(damping)
+    {
+
+        if (label == FireworkEmissionStrategyLabel::Sphere) {
+            sampleStrategy.type = FireworkEmissionStrategyLabel::Sphere;
+            new (&sampleStrategy.sphere) SphereEmission { radius };
+        } else if (label == FireworkEmissionStrategyLabel::HemiSphere) {
+            sampleStrategy.type = FireworkEmissionStrategyLabel::HemiSphere;
+            printf("Initializing hemisphere...\n");
+            new (&sampleStrategy.hemisphere) HemiSphereEmission { radius };
+        }
+    };
+
 };
 
 } // namespace coriolis
