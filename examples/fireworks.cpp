@@ -6,7 +6,7 @@
 #include <memory>
 #include <sstream>
 
-constexpr static int MAX_PARTICLES = 50'000;
+constexpr static int MAX_PARTICLES = 80'000;
 
 Vector3 toRL(coriolis::Vector3 vec) {
     return Vector3 { (float)vec.x, (float)vec.y, (float)vec.z };
