@@ -2,11 +2,12 @@
 #include <coriolis/math/vector.hpp>
 #include <coriolis/physics/firework.hpp>
 #include <coriolis/math/random.hpp>
+#include <coriolis/physics/pfreg.hpp>
 #include "assert.h"
 #include <memory>
 #include <sstream>
 
-constexpr static int MAX_PARTICLES = 55'000;
+constexpr static int MAX_PARTICLES = 80'000;
 
 Vector3 toRL(coriolis::Vector3 vec) {
     return Vector3 { (float)vec.x, (float)vec.y, (float)vec.z };
@@ -16,6 +17,11 @@ int main(void)
 {
     std::vector<std::unique_ptr<coriolis::FireworkRule>> rules = coriolis::FireworkRule::GetDefaultFireworkRules();
     std::vector<std::unique_ptr<coriolis::Firework>> fireworks {};
+    std::unique_ptr<coriolis::ParticleForceRegistry> registry  = std::make_unique<coriolis::ParticleForceRegistry>();
+
+    std::unique_ptr<coriolis::ParticleGravity> gravity = std::make_unique<coriolis::ParticleGravity>(coriolis::Vector3(0.0,-11.0,0.0));
+    std::unique_ptr<coriolis::ParticleDrag> drag = std::make_unique<coriolis::ParticleDrag>(0.1,0.01);
+    std::unique_ptr<coriolis::ParticleUplift> uplift = std::make_unique<coriolis::ParticleUplift>(coriolis::Vector3(0,0,0),10.0,10.0,20);
 
     fireworks.resize(MAX_PARTICLES);
 
@@ -43,6 +49,7 @@ int main(void)
         float delta = GetFrameTime();
         fireworks.size();
 
+        registry->updateForces(delta);
 
         // Process existing fireworks
         for (size_t i = 0; i < fireworks.size(); i++) {
@@ -69,12 +76,18 @@ int main(void)
                             auto particle = std::make_unique<coriolis::Particle>(
                                 pos,
                                 vel + rule_for_payload->sampleVelocity(),
-                                coriolis::Vector3(0, -10, 0),
+                                coriolis::Vector3(0, 0, 0),
                                 rule_for_payload->damping,
                                 1
                             );
 
-                            fireworks[firework_index] = 
+                            if (fireworks[firework_index] != nullptr) {
+                                registry->remove(fireworks[firework_index]->particle.get(), gravity.get());
+                                registry->remove(fireworks[firework_index]->particle.get(), drag.get());
+                                registry->remove(fireworks[firework_index]->particle.get(), uplift.get());
+                            }
+
+                            fireworks[firework_index] =
                                 std::make_unique<coriolis::Firework>(
                                     std::move(particle),
                                     coriolis::randomReal(rule_for_payload->minAge, rule_for_payload->maxAge),
@@ -86,6 +99,9 @@ int main(void)
                     }
                 }
 
+                registry->remove(firework->particle.get(), gravity.get());
+                registry->remove(firework->particle.get(), drag.get());
+                registry->remove(firework->particle.get(), uplift.get());
                 fireworks[i] = nullptr;
             }
         }
@@ -100,18 +116,28 @@ int main(void)
                 1
             );
 
+            registry->add(particle.get(), gravity.get());
+            registry->add(particle.get(), uplift.get());
+
             auto firework = std::make_unique<coriolis::Firework>(
                 std::move(particle),
                 coriolis::randomReal(rule->minAge, rule->maxAge),
                 0
             );
 
+
+            if (fireworks[firework_index] != nullptr) {
+                registry->remove(fireworks[firework_index]->particle.get(), gravity.get());
+                registry->remove(fireworks[firework_index]->particle.get(), drag.get());
+                registry->remove(fireworks[firework_index]->particle.get(), uplift.get());
+            }
+
             fireworks[firework_index] = std::move(firework);
             firework_index = (++firework_index) % MAX_PARTICLES;
         }
 
         if (IsKeyDown(KEY_TWO)) {
-            auto rule = rules[4].get();
+            auto rule = rules[7].get();
             auto particle = std::make_unique<coriolis::Particle>(
                 coriolis::Vector3(0,0,0),
                 rule->sampleVelocity(),
@@ -120,11 +146,20 @@ int main(void)
                 3
             );
 
+            registry->add(particle.get(), drag.get());
+
             auto firework = std::make_unique<coriolis::Firework>(
                 std::move(particle),
                 coriolis::randomReal(rule->minAge, rule->maxAge),
-                4
+                7
             );
+
+            if (fireworks[firework_index] != nullptr) {
+                registry->remove(fireworks[firework_index]->particle.get(), gravity.get());
+                registry->remove(fireworks[firework_index]->particle.get(), drag.get());
+                registry->remove(fireworks[firework_index]->particle.get(), uplift.get());
+            }
+
 
             fireworks[firework_index] = std::move(firework);
             firework_index = (++firework_index) % MAX_PARTICLES;

@@ -32,8 +32,8 @@ std::vector<std::unique_ptr<FireworkRule>> FireworkRule::GetDefaultFireworkRules
         3.0,
         4.0,
         0.9999,
-        coriolis::Vector3(-6,30,-6),
-        coriolis::Vector3(6,40,6)
+        coriolis::Vector3(-12,30,-12),
+        coriolis::Vector3(12,40,12)
     );
     rule1->payloads = {
         { 1,   // Type
@@ -88,8 +88,8 @@ std::vector<std::unique_ptr<FireworkRule>> FireworkRule::GetDefaultFireworkRules
         5.0,
         6.0,
         0.99,
-        coriolis::Vector3(-6,40,-6),
-        coriolis::Vector3(6,60,6)
+        coriolis::Vector3(-6,20,-6),
+        coriolis::Vector3(6,45,6)
     );
     rule5->payloads = {
         { 5,   // Type
@@ -122,6 +122,17 @@ std::vector<std::unique_ptr<FireworkRule>> FireworkRule::GetDefaultFireworkRules
     rule7->payloads = {
     };
 
+    // FIREWORK #3 Simple rocket
+    auto rule8 = std::make_unique<FireworkRule>(
+        7,
+        5.0,
+        10.0,
+        0.9999,
+        coriolis::Vector3(-12,90,-12),
+        coriolis::Vector3(12,120,12)
+    );
+    rule8->payloads = {
+    };
 
     rules.push_back(std::move(rule1));
     rules.push_back(std::move(rule2));
@@ -130,7 +141,7 @@ std::vector<std::unique_ptr<FireworkRule>> FireworkRule::GetDefaultFireworkRules
     rules.push_back(std::move(rule5));
     rules.push_back(std::move(rule6));
     rules.push_back(std::move(rule7));
-
+    rules.push_back(std::move(rule8));
 
     return rules;
 }

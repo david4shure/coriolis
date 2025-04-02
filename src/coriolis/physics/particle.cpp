@@ -16,6 +16,8 @@ void Particle::integrate(real duration) {
     // TODO(David): Add a force accumulator and set this here rather than leaving it const
     Vector3 resultingAcc = acc;
 
+    resultingAcc += forceAccum * invMass;
+
     // Integrate velocity forward
     vel += resultingAcc * duration;
 
@@ -29,7 +31,22 @@ void Particle::integrate(real duration) {
     lifetime -= duration;
 }
 
-// TODO implement me
 void Particle::clearAccumulator() {
+    forceAccum.clear();
+}
 
+void Particle::addForce(const Vector3& force) {
+    forceAccum += force;
+}
+
+bool Particle::hasFiniteMass() {
+    return invMass >= 0.0;
+}
+
+real Particle::getMass() {
+    if (invMass == 0.0) {
+        return REAL_MAX;
+    } else {
+        return ((real)1)/invMass;
+    }
 }

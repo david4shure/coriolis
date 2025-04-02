@@ -35,9 +35,22 @@ public:
     // Newton-Euler method
     void integrate(real duration);
 
+    // Accumumlated force, many different forces will be added to this
+    // single vector
+    Vector3 forceAccum;
+
     // Clears force accumulator
     void clearAccumulator();
 
+    // Adds force to forceAccum
+    void addForce(const Vector3& force);
+
+    // Returns true if particle has positive mass
+    bool hasFiniteMass();
+
+    // gets the actual mass
+    // (Does a computation to turn invMass into mass)
+    real getMass();
 }; // struct Particle
 
 }; // namespace coriolis

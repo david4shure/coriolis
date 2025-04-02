@@ -133,7 +133,6 @@ struct FireworkRule {
             new (&sampleStrategy.sphere) SphereEmission { radius };
         } else if (label == FireworkEmissionStrategyLabel::HemiSphere) {
             sampleStrategy.type = FireworkEmissionStrategyLabel::HemiSphere;
-            printf("Initializing hemisphere...\n");
             new (&sampleStrategy.hemisphere) HemiSphereEmission { radius };
         }
     };

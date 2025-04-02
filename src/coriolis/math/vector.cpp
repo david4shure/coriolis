@@ -61,6 +61,12 @@ real Vector3::angle_between(const Vector3& other) const noexcept {
     return acos(dot / (mag() * other.mag()));
 }
 
+void Vector3::clear() noexcept {
+    x = 0.0;
+    y = 0.0;
+    z = 0.0;
+}
+
 // Gives us a Basis from vector a and b, with a being retained as one of the
 // orthogonal axes
 std::optional<Basis3> Vector3::basis_from(Vector3& a, Vector3& b) noexcept {

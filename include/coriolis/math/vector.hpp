@@ -52,6 +52,9 @@ struct Vector3 {
   // theta = cos-1(a . b / |a| |b|)
   real angle_between(const Vector3 &other) const noexcept;
 
+  // Clears the vector out of values
+  void clear() noexcept;
+
   // Gives us a Basis from vector a and b, with a being retained as one of the
   // orthogonal axes
   static std::optional<Basis3> basis_from(Vector3 &a, Vector3 &b) noexcept;
