@@ -22,6 +22,7 @@ int main(void)
     std::unique_ptr<coriolis::ParticleGravity> gravity = std::make_unique<coriolis::ParticleGravity>(coriolis::Vector3(0.0,-11.0,0.0));
     std::unique_ptr<coriolis::ParticleDrag> drag = std::make_unique<coriolis::ParticleDrag>(0.1,0.01);
     std::unique_ptr<coriolis::ParticleUplift> uplift = std::make_unique<coriolis::ParticleUplift>(coriolis::Vector3(0,0,0),10.0,10.0,20);
+    std::unique_ptr<coriolis::ParticleGravityCenter> gravCenter = std::make_unique<coriolis::ParticleGravityCenter>(coriolis::Vector3(0.0,0.0,0.0));
 
     fireworks.resize(MAX_PARTICLES);
 
@@ -165,6 +166,34 @@ int main(void)
             firework_index = (++firework_index) % MAX_PARTICLES;
         }
 
+        if (IsKeyDown(KEY_THREE)) {
+            auto rule = rules[8].get();
+            auto particle = std::make_unique<coriolis::Particle>(
+                coriolis::randomVector(coriolis::Vector3(30,0,0), coriolis::Vector3(30,0,0)),
+                rule->sampleVelocity(),
+                coriolis::Vector3(0,0,0),
+                rule->damping,
+                3
+            );
+
+            registry->add(particle.get(), gravCenter.get());
+
+            auto firework = std::make_unique<coriolis::Firework>(
+                std::move(particle),
+                coriolis::randomReal(rule->minAge, rule->maxAge),
+                8
+            );
+
+            if (fireworks[firework_index] != nullptr) {
+                registry->remove(fireworks[firework_index]->particle.get(), gravity.get());
+                registry->remove(fireworks[firework_index]->particle.get(), drag.get());
+                registry->remove(fireworks[firework_index]->particle.get(), uplift.get());
+            }
+
+            fireworks[firework_index] = std::move(firework);
+            firework_index = (++firework_index) % MAX_PARTICLES;
+        }
+
         BeginDrawing();
 
             ClearBackground(BLACK);
@@ -207,6 +236,7 @@ int main(void)
                     /* DrawCircle3D(toRL(firework->particle->pos), 0.2, Vector3(0,1,0), 2.3, color); */
                     /* DrawSphereEx(toRL(firework->particle->pos), 0.2, 3,3,color); */
                 }
+                DrawSphere(Vector3(0,0,0), 3.0, RED);
                 DrawGrid(25.0,10.0);
             EndMode3D();
 

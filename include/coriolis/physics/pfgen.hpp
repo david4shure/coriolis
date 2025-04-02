@@ -48,6 +48,16 @@ public:
     ~ParticleUplift();
 };
 
+class ParticleGravityCenter : public IParticleForceGenerator {
+    const Vector3 gravCenter;
+
+public:
+    inline ParticleGravityCenter(const Vector3 gravCenter) : gravCenter(gravCenter) {};
+
+    void updateForce(Particle* particle, real duration) override;
+    ~ParticleGravityCenter();
+};
+
 } // namespace
 
 #endif // CORIOLIS_PHYSICS_FORCEGEN_HPP

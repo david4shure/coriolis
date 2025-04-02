@@ -8,6 +8,7 @@ using namespace coriolis;
 ParticleGravity::~ParticleGravity() = default;
 ParticleDrag::~ParticleDrag() = default;
 ParticleUplift::~ParticleUplift() = default;
+ParticleGravityCenter::~ParticleGravityCenter() = default;
 
 void ParticleGravity::updateForce(Particle* particle, real duration) {
     if (!particle->hasFiniteMass()) return;
@@ -41,4 +42,12 @@ void ParticleUplift::updateForce(Particle* particle, real duration) {
     }
 
     particle->addForce(Vector3(0,upward_force_value,0));
+}
+
+void ParticleGravityCenter::updateForce(Particle* particle, real duration) {
+    Vector3 particleToCenter = particle->pos - gravCenter; 
+    particleToCenter.norm();
+    particleToCenter.scale(1.0/particleToCenter.sqr_mag());
+
+    particle->addForce(particleToCenter*-10);
 }

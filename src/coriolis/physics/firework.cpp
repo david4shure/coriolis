@@ -134,6 +134,19 @@ std::vector<std::unique_ptr<FireworkRule>> FireworkRule::GetDefaultFireworkRules
     rule8->payloads = {
     };
 
+
+    // FIREWORK #4 Another Simple rocket
+    auto rule9 = std::make_unique<FireworkRule>(
+        8,
+        50.0,
+        REAL_MAX,
+        0.999999,
+        coriolis::Vector3(0,-3,15),
+        coriolis::Vector3(0,3,40)
+    );
+    rule9->payloads = {
+    };
+
     rules.push_back(std::move(rule1));
     rules.push_back(std::move(rule2));
     rules.push_back(std::move(rule3));
@@ -142,6 +155,7 @@ std::vector<std::unique_ptr<FireworkRule>> FireworkRule::GetDefaultFireworkRules
     rules.push_back(std::move(rule6));
     rules.push_back(std::move(rule7));
     rules.push_back(std::move(rule8));
+    rules.push_back(std::move(rule9));
 
     return rules;
 }
